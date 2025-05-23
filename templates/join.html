@@ -1,0 +1,112 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sayy</title>
+  
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="{% static 'join.css' %}" />
+</head>
+<body>
+
+  <div class="join-container">
+       <div class="container">
+    <div class="logo-container">
+      
+      <img style="margin-bottom: 3rem; height: 100px; width: 100px; color: aliceblue; background-color: aliceblue; border-radius: 50%;" src="{% static 'img/logo.png' %}" alt="Logo" class="logo" />\
+       
+  <div>
+      <p style="color: rgb(163, 248, 248);">Feel close, even when far. Sayy connects...
+
+</p>
+    </div>
+
+    </div>
+    
+    <div>
+ 
+    </div>
+    
+ 
+    <h1>Join Video Chat</h1>
+    <form id="joinForm" autocomplete="off">
+      <div class="mb-3">
+        <label for="username">Your Name</label>
+        <input
+          type="text"
+          class="form-control"
+          id="username"
+          name="username"
+          placeholder="Enter your name..."
+          required
+        />
+      </div>
+
+      <div class="mb-3">
+        <label for="room">Room Name</label>
+        <input
+          type="text"
+          class="form-control"
+          id="room"
+          name="room"
+          placeholder="Enter room name..."
+          style="text-transform: uppercase;"
+          required
+        />
+      </div>
+      
+      <button type="submit" class="btn btn-join">Join</button>
+    </form>
+    <div class="footer-text">
+      &copy; Sayy 2025.
+    </div>
+  </div>
+
+  <!-- Bootstrap JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="{% static 'join.js' %}"></script>
+
+  <script>
+    const form = document.getElementById('joinForm');
+
+    const handleSubmit = async (e) => {
+      e.preventDefault();
+
+      const username = e.target.username.value.trim();
+      const room = e.target.room.value.trim().toUpperCase();
+
+      if (!username || !room) {
+        alert("Both Username and Room are required!");
+        return;
+      }
+
+      try {
+        const response = await fetch(`/get_token/?channel=${encodeURIComponent(room)}`);
+        
+        if (!response.ok) {
+          throw new Error("Failed to fetch token.");
+        }
+
+        const data = await response.json();
+
+        const { uid, token } = data;
+
+        sessionStorage.setItem('UID', uid);
+        sessionStorage.setItem('token', token);
+        sessionStorage.setItem('username', username);
+        sessionStorage.setItem('room', room);
+
+        window.location.href = '/chat/';
+      } catch (error) {
+        console.error("Error during join process:", error);
+        alert("Failed to join the room. Please try again later.");
+      }
+    };
+
+    form.addEventListener('submit', handleSubmit);
+  </script>
+</body>
+</html>
